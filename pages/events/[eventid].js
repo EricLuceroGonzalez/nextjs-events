@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
 import { getEventById } from "../../dummy-data";
 import { Fragment } from "react";
-import EventSummary from "../../components/events/event-summary";
-import EventLogistics from "../../components/events/event-logistics";
-import EventContent from "../../components/events/event-content";
+import EventSummary from "../../components/event-detail/event-summary";
+import EventLogistics from "../../components/event-detail/event-logistics";
+import EventContent from "../../components/event-detail/event-content";
+import ErrorAlert from "../../components/user-interface/error-alert";
 
 function SingleEventPage(params) {
   const router = useRouter();
@@ -13,7 +14,9 @@ function SingleEventPage(params) {
   const event = getEventById(thisEventId);
   
   if (!event) {
-    return <p>No event found!</p>;
+    return <ErrorAlert>
+      <p>No event found!</p>
+    </ErrorAlert>
   }
   return (
     <Fragment>
