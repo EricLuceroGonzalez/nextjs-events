@@ -1,22 +1,19 @@
-import { useRouter } from "next/router";
-import { getEventById } from "../../dummy-data";
+import { getEventById, getFeaturedEvents } from "../../helpers/api-utils";
 import { Fragment } from "react";
 import EventSummary from "../../components/event-detail/event-summary";
 import EventLogistics from "../../components/event-detail/event-logistics";
 import EventContent from "../../components/event-detail/event-content";
 import ErrorAlert from "../../components/user-interface/error-alert";
 
-function SingleEventPage(params) {
-  const router = useRouter();
-  const thisEventId = router.query.eventid;
-  console.log(router);
-  
-  const event = getEventById(thisEventId);
-  
+function SingleEventPage(props) {
+  const event = props.selectedEvent;
+
   if (!event) {
-    return <ErrorAlert>
-      <p>No event found!</p>
-    </ErrorAlert>
+    return (
+      <ErrorAlert>
+        <p>No event found!</p>
+      </ErrorAlert>
+    );
   }
   return (
     <Fragment>
@@ -32,6 +29,19 @@ function SingleEventPage(params) {
       </EventContent>
     </Fragment>
   );
+}
+
+export async function getStaticProps(context) {
+  const eventId = context.params.eventid;
+  const event = await getEventById(eventId);
+
+  return { props: { selectedEvent: event } };
+}
+
+export async function getStaticPaths() {
+  const events = await getFeaturedEvents();
+  const paths = events.map((event) => ({ params: { eventid: event.id } }));
+  return { paths: paths, fallback: true };
 }
 
 export default SingleEventPage;
