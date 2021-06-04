@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from "next/link";
 import classes from "./event-item.module.css";
 import DateIcon from '../icons/date-icon';
@@ -18,7 +19,7 @@ function EventItem(props) {
   const exploreId = `/events/${id}`;
   return (
     <li className={classes.item}>
-      <img src={`/` + image} alt={`${image}-event`} />
+      <Image src={`/` + image} alt={`${image}-event`} width={240} height={240} />
       <div className={classes.content}>
         <div className={classes.summary}>
           <h2>{title}</h2>
