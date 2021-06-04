@@ -7,6 +7,7 @@ import Button from "../../components/user-interface/button";
 import ErrorAlert from "../../components/user-interface/error-alert";
 import { getFeaturedEvents } from "../../helpers/api-utils";
 import useSWR from "swr";
+import Head from "next/head";
 
 export default function FilteredEvents() {
   const [loadedEvents, setEvents] = useState();
@@ -16,7 +17,7 @@ export default function FilteredEvents() {
   const { data, error } = useSWR(
     "https://nextjs-udemy-f70a6-default-rtdb.firebaseio.com/events.json"
   );
-  
+
   useEffect(() => {
     if (data) {
       const events = [];
@@ -31,16 +32,21 @@ export default function FilteredEvents() {
     }
     return () => {};
   }, [data]);
+
+  let pageHeadData = (
+    <Head>
+      <title>Filters | Events</title>
+      <meta name="description" content="A List of some filtered events" />
+    </Head>
+  );
   if (!loadedEvents) {
-    return <p className="center">Loaading.....</p>;
+    return (
+      <Fragment>
+        {pageHeadData}
+        <p className="center">Loaading.....</p>
+      </Fragment>
+    );
   }
-
-  const filteredYear = filterData[0];
-  const filteredMonth = filterData[1];
-
-  // Transform String to Number
-  const numYear = +filteredYear;
-  const numMonth = +filteredMonth;
 
   const filteredEvents = loadedEvents.filter((event) => {
     const eventDate = new Date(event.date);
@@ -49,6 +55,24 @@ export default function FilteredEvents() {
       eventDate.getMonth() === numMonth - 1
     );
   });
+
+  const filteredYear = filterData[0];
+  const filteredMonth = filterData[1];
+
+  // Transform String to Number
+  const numYear = +filteredYear;
+  const numMonth = +filteredMonth;
+
+  // Header function
+  pageHeadData = (
+    <Head>
+      <title>Filters | Events</title>
+      <meta
+        name="description"
+        content={`All events for ${numMonth}/${numYear}}.`}
+      />
+    </Head>
+  );
 
   // check if not a string
   if (
@@ -61,6 +85,7 @@ export default function FilteredEvents() {
   ) {
     return (
       <Fragment>
+        {pageHeadData}
         <ErrorAlert>
           <p>Invalid.Please adjust your values</p>
         </ErrorAlert>
@@ -70,11 +95,12 @@ export default function FilteredEvents() {
       </Fragment>
     );
   }
-console.log(filteredEvents);
+  console.log(filteredEvents);
 
   if (!filteredEvents || filteredEvents.length === 0) {
     return (
       <Fragment>
+        {pageHeadData}
         <ErrorAlert>
           <p>No events found for the chosen filter</p>
         </ErrorAlert>
@@ -88,6 +114,7 @@ console.log(filteredEvents);
   const date = new Date(numYear, numMonth - 1);
   return (
     <Fragment>
+      {pageHeadData}
       <h1>Some Filtered Events</h1>
       <ResultsTitle date={date} />
       <EventList items={filteredEvents} />
